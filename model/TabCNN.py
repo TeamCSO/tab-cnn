@@ -3,12 +3,12 @@
 '''
 
 from __future__ import print_function
-import keras
 import os
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten, Reshape, Activation
-from keras.layers import Conv2D, MaxPooling2D, Conv1D, Lambda
+from keras.layers import Conv2D, MaxPooling2D
 from keras import backend as K
+from keras import optimizers
 from DataGenerator import DataGenerator
 import pandas as pd
 import numpy as np
@@ -66,7 +66,7 @@ class TabCNN:
 
     def load_IDs(self):
         csv_file = self.data_path + self.id_file
-        self.list_IDs = list(pd.read_csv(csv_file, header=None)[0])
+        self.list_IDs = list(pd.DataFrame(pd.read_csv(csv_file))[0])
         
     def partition_data(self, data_split):
         self.data_split = data_split
@@ -109,7 +109,6 @@ class TabCNN:
             self.model.summary(print_fn=lambda x: fh.write(x + '\n'))
        
     def softmax_by_string(self, t):
-        sh = K.shape(t)
         string_sm = []
         for i in range(self.num_strings):
             string_sm.append(K.expand_dims(K.softmax(t[:,i,:]), axis=1))
@@ -141,7 +140,7 @@ class TabCNN:
         model.add(Activation(self.softmax_by_string))
 
         model.compile(loss=self.catcross_by_string,
-                      optimizer=keras.optimizers.Adadelta(),
+                      optimizer=optimizers.adadelta_v2.Adadelta(),
                       metrics=[self.avg_acc])
         
         self.model = model
