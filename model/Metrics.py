@@ -1,6 +1,5 @@
 import numpy as np
-import keras
-    
+
 def tab2pitch(tab):
     pitch_vector = np.zeros(44)
     string_pitches = [40, 45, 50, 55, 59, 64]

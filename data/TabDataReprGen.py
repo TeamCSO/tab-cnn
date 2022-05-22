@@ -138,13 +138,13 @@ class TabDataReprGen:
     def save_data(self, filename):
         np.savez(filename, **self.output)
         
-    def get_nth_filename(self, n):
+    def get_nth_filename(self, n: int):
         # returns the filename with no extension
         if not self.filenames:
             self.filenames = [x[-5:] for x in os.listdir(self.path_anno)]
         return self.filenames[n]
 
-    def load_and_save_repr_nth_file(self, n):
+    def load_and_save_repr_nth_file(self, n: int):
         # filename has no extenstion
         filename = self.get_nth_filename(n)
         num_frames = self.load_rep_and_labels_from_raw_file(filename)
@@ -154,11 +154,11 @@ class TabDataReprGen:
             os.makedirs(save_path)
         self.save_data(save_path + filename + ".npz")
         
-def main(args: list[str]):
+def main(args: tuple[int, str]):
     n = args[0]
     m = args[1]
     gen = TabDataReprGen(mode=m)
     gen.load_and_save_repr_nth_file(n)
     
 if __name__ == "__main__":
-    main(sys.argv)
+    main(tuple[int, str](sys.argv))
