@@ -1,1 +1,1 @@
-nohup python Parallel_TabDataReprGen.py &
+caffeinate -i python Parallel_TabDataReprGen.py &
