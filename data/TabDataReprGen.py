@@ -1,10 +1,11 @@
+import sys
 import os
 import numpy as np
 import jams
+from jams import Annotation
 from scipy.io import wavfile
-import sys
 import librosa
-from keras.utils import to_categorical
+from keras.utils.np_utils import to_categorical
 
 class TabDataReprGen:
     
@@ -13,6 +14,7 @@ class TabDataReprGen:
         path = "GuitarSet/"
         self.path_audio = path + "audio/audio_mic/"
         self.path_anno = path + "annotation/"
+        self.filenames = ""
         
         # labeling parameters
         self.string_midi_pitches = [40,45,50,55,59,64]
@@ -63,13 +65,16 @@ class TabDataReprGen:
         labels = []
         for string_num in range(6):
             anno = jam.annotations["note_midi"][string_num]
-            string_label_samples = anno.to_samples(times)
+            if not isinstance(anno,  Annotation):
+                raise Exception
+            string_label_annot = anno.to_samples(times)
+            string_label_samples: list[int] = []
             # replace midi pitch values with fret numbers
             for i in frame_indices:
-                if string_label_samples[i] == []:
-                    string_label_samples[i] = -1
+                if string_label_annot[i] == []:
+                    string_label_samples.append(-1)
                 else:
-                    string_label_samples[i] = int(round(string_label_samples[i][0]) - self.string_midi_pitches[string_num])
+                    string_label_samples.append(round(string_label_annot[i][0]) - self.string_midi_pitches[string_num])
             labels.append([string_label_samples])
             
         labels = np.array(labels)
@@ -105,7 +110,7 @@ class TabDataReprGen:
         if self.normalize:
             data = librosa.util.normalize(data)
         if self.downsample:
-            data = librosa.resample(data, self.sr_original, self.sr_downs)
+            data = librosa.resample(data, orig_sr = self.sr_original, target_sr = self.sr_downs)
             self.sr_curr = self.sr_downs
         if self.preproc_mode == "c":
             data = np.abs(librosa.cqt(data,
@@ -126,7 +131,7 @@ class TabDataReprGen:
         elif self.preproc_mode == "s":
             data = np.abs(librosa.stft(data, n_fft=self.n_fft, hop_length=self.hop_length))
         else:
-            print "invalid representation mode."
+            print("invalid representation mode.")
 
         return data
 
@@ -135,40 +140,25 @@ class TabDataReprGen:
         
     def get_nth_filename(self, n):
         # returns the filename with no extension
-        filenames = np.sort(np.array(os.listdir(self.path_anno)))
-        filenames = filter(lambda x: x[-5:] == ".jams", filenames)
-        return filenames[n][:-5] 
-    
+        if not self.filenames:
+            self.filenames = [x[-5:] for x in os.listdir(self.path_anno)]
+        return self.filenames[n]
+
     def load_and_save_repr_nth_file(self, n):
         # filename has no extenstion
         filename = self.get_nth_filename(n)
         num_frames = self.load_rep_and_labels_from_raw_file(filename)
-        print "done: " + filename + ", " + str(num_frames) + " frames" 
+        print("done: " + filename + ", " + str(num_frames) + " frames")
         save_path = self.save_path
         if not os.path.exists(save_path):
             os.makedirs(save_path)
         self.save_data(save_path + filename + ".npz")
         
-def main(args):
+def main(args: list[str]):
     n = args[0]
     m = args[1]
     gen = TabDataReprGen(mode=m)
     gen.load_and_save_repr_nth_file(n)
     
 if __name__ == "__main__":
-    main(args)
-
-
-
-    
-            
-                                
-                    
-                    
-                
-                
-    
-                
-                
-                
-                
+    main(sys.argv)
