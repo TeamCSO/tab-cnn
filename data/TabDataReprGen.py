@@ -141,7 +141,7 @@ class TabDataReprGen:
     def get_nth_filename(self, n: int):
         # returns the filename with no extension
         if not self.filenames:
-            self.filenames = [x[-5:] for x in os.listdir(self.path_anno)]
+            self.filenames = [x[:-5] for x in os.listdir(self.path_anno) if x[-5:] == ".jams"]
         return self.filenames[n]
 
     def load_and_save_repr_nth_file(self, n: int):
