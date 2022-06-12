@@ -5,9 +5,8 @@ from multiprocessing import Pool
 num_filenames = 360
 modes = ["c","m","cm","s"]
 
-filename_indices = map(lambda n: n * 4, range(num_filenames))
-mode_list = [modes[0]] * 360 + [modes[1]] * 360 + [modes[2]] * 360 + [modes[3]] * 360 
-
+filename_indices = list(range(num_filenames)) * 4
+mode_list = [modes[0]] * 360 + [modes[1]] * 360 + [modes[2]] * 360 + [modes[3]] * 360
 
 if __name__ == "__main__":
     # number of processes will run simultaneously
