@@ -2,7 +2,6 @@
     at the frame level during guitar performance
 '''
 
-from __future__ import print_function
 import os
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten, Reshape, Activation
@@ -22,7 +21,7 @@ class TabCNN:
                  epochs=8,
                  con_win_size = 9,
                  spec_repr="c",
-                 data_path="../data/spec_repr/",
+                 data_path= os.getcwd() + "/data/spec_repr/",
                  id_file="id.csv",
                  save_path="saved/"):   
         
@@ -65,8 +64,8 @@ class TabCNN:
         self.num_strings = 6
 
     def load_IDs(self):
-        csv_file = self.data_path + self.id_file
-        self.list_IDs = list(pd.DataFrame(pd.read_csv(csv_file))[0])
+        csv_file: pd.FilePath = self.data_path + self.id_file
+        self.list_IDs = list(pd.read_csv(csv_file, header=None)[0])
         
     def partition_data(self, data_split):
         self.data_split = data_split
@@ -147,11 +146,11 @@ class TabCNN:
 
     def train(self):
         self.model.fit_generator(generator=self.training_generator,
-                    validation_data=None,
-                    epochs=self.epochs,
-                    verbose=1,
-                    use_multiprocessing=True,
-                    workers=9)
+                                 validation_data=None,
+                                 epochs=self.epochs,
+                                 verbose=1,
+                                 use_multiprocessing=True,
+                                 workers=9)
         
     def save_weights(self):
         self.model.save_weights(self.split_folder + "weights.h5")
@@ -190,22 +189,22 @@ class TabCNN:
 
 tabcnn = TabCNN()
 
-print("logging model...")
-tabcnn.build_model()
-tabcnn.log_model()
-
-for fold in range(6):
-    print("\nfold " + str(fold))
-    tabcnn.partition_data(fold)
-    print("building model...")
+if __name__ == "__main__":
+    print("logging model...")
     tabcnn.build_model()
-    print("training...")
-    tabcnn.train()
-    tabcnn.save_weights()
-    print("testing...")
-    tabcnn.test()
-    tabcnn.save_predictions()
-    print("evaluation...")
-    tabcnn.evaluate()
-print("saving results...")
-tabcnn.save_results_csv()
+    tabcnn.log_model()
+    for fold in range(6):
+        print("\nfold " + str(fold))
+        tabcnn.partition_data(fold)
+        print("building model...")
+        tabcnn.build_model()
+        print("training...")
+        tabcnn.train()
+        tabcnn.save_weights()
+        print("testing...")
+        tabcnn.test()
+        tabcnn.save_predictions()
+        print("evaluation...")
+        tabcnn.evaluate()
+        print("saving results...")
+        tabcnn.save_results_csv()
