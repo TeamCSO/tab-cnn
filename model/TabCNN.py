@@ -12,6 +12,7 @@ from DataGenerator import DataGenerator
 import pandas as pd
 import numpy as np
 import datetime
+import random
 from Metrics import *
 
 class TabCNN:
@@ -193,9 +194,14 @@ if __name__ == "__main__":
     print("logging model...")
     tabcnn.build_model()
     tabcnn.log_model()
-    for fold in range(6):
+    for fold in range(1):
         print("\nfold " + str(fold))
-        tabcnn.partition_data(fold)
+        # select random guitarist for validation
+        valid_num = random.randint(1,5)
+        print("valid Guitarist num:",valid_num)
+        tabcnn.partition_data(valid_num)
+        
+        # tabcnn.partition_data(fold)
         print("building model...")
         tabcnn.build_model()
         print("training...")
