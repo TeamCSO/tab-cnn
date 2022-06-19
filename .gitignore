@@ -1,2 +1,6 @@
 pipfile
 pipfile.lock
+*.jams
+*.wav
+*.npz
+.DS_Store
