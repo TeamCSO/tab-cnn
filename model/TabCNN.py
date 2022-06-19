@@ -19,7 +19,7 @@ class TabCNN:
     
     def __init__(self, 
                  batch_size=128, 
-                 epochs=8,
+                 epochs=3,
                  con_win_size = 9,
                  spec_repr="c",
                  data_path= os.getcwd() + "/data/spec_repr/",
