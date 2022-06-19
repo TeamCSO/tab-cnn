@@ -1,6 +1,6 @@
 import numpy as np
 
-def tab2pitch_internal(tab):
+def tab2pitch(tab):
     pitch_vector = np.zeros(44)
     string_pitches = [40, 45, 50, 55, 59, 64]
     for string_num in range(len(tab)):
@@ -8,11 +8,10 @@ def tab2pitch_internal(tab):
         fret_class = np.argmax(fret_vector, -1)
         # 0 means that the string is closed 
         if fret_class > 0:
+            # 21 + 64 - 41 = 44 is the max number
             pitch_num = fret_class + string_pitches[string_num] - 41
             pitch_vector[pitch_num] = 1
     return pitch_vector
-
-tab2pitch = np.vectorize(tab2pitch_internal)
 
 def tab2bin(tab):
     tab_arr = np.zeros((6,20))
@@ -24,6 +23,9 @@ def tab2bin(tab):
             fret_num = fret_class - 1
             tab_arr[string_num][fret_num] = 1
     return tab_arr
+
+tab2pitch = np.vectorize(tab2pitch, signature='(n,m) -> (k)')
+tab2bin = np.vectorize(tab2bin, signature='(n,m) -> (p,q)')
 
 def pitch_precision(pred, gt):
     pitch_pred = tab2pitch(pred)
@@ -47,16 +49,16 @@ def pitch_f_measure(pred, gt):
 
 def tab_precision(pred, gt):
     # get rid of "closed" class, as we only want to count positives
-    tab_pred = np.array(map(tab2bin,pred))
-    tab_gt = np.array(map(tab2bin,gt))
+    tab_pred = tab2bin(pred)
+    tab_gt = tab2bin(gt)
     numerator = np.sum(np.multiply(tab_pred, tab_gt).flatten())
     denominator = np.sum(tab_pred.flatten())
     return (1.0 * numerator) / denominator
 
 def tab_recall(pred, gt):
     # get rid of "closed" class, as we only want to count positives
-    tab_pred = np.array(map(tab2bin,pred))
-    tab_gt = np.array(map(tab2bin,gt))
+    tab_pred = tab2bin(pred)
+    tab_gt = tab2bin(gt)
     numerator = np.sum(np.multiply(tab_pred, tab_gt).flatten())
     denominator = np.sum(tab_gt.flatten())
     return (1.0 * numerator) / denominator
