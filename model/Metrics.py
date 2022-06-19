@@ -1,6 +1,6 @@
 import numpy as np
 
-def tab2pitch(tab):
+def tab2pitch_internal(tab):
     pitch_vector = np.zeros(44)
     string_pitches = [40, 45, 50, 55, 59, 64]
     for string_num in range(len(tab)):
@@ -11,6 +11,8 @@ def tab2pitch(tab):
             pitch_num = fret_class + string_pitches[string_num] - 41
             pitch_vector[pitch_num] = 1
     return pitch_vector
+
+tab2pitch = np.vectorize(tab2pitch_internal)
 
 def tab2bin(tab):
     tab_arr = np.zeros((6,20))
@@ -24,15 +26,15 @@ def tab2bin(tab):
     return tab_arr
 
 def pitch_precision(pred, gt):
-    pitch_pred = np.array(map(tab2pitch,pred))
-    pitch_gt = np.array(map(tab2pitch,gt))
+    pitch_pred = tab2pitch(pred)
+    pitch_gt = tab2pitch(gt)
     numerator = np.sum(np.multiply(pitch_pred, pitch_gt).flatten())
     denominator = np.sum(pitch_pred.flatten())
     return (1.0 * numerator) / denominator
 
 def pitch_recall(pred, gt):
-    pitch_pred = np.array(map(tab2pitch,pred))
-    pitch_gt = np.array(map(tab2pitch,gt))
+    pitch_pred = tab2pitch(pred)
+    pitch_gt = tab2pitch(gt)
     numerator = np.sum(np.multiply(pitch_pred, pitch_gt).flatten())
     denominator = np.sum(pitch_gt.flatten())
     return (1.0 * numerator) / denominator
