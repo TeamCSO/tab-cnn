@@ -1,1 +1,1 @@
-caffeinate -i python data/Parallel_TabDataReprGen.py &
+cd data/ && caffeinate -i python Parallel_TabDataReprGen.py & cd -

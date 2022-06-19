@@ -21,7 +21,7 @@ This project was made to be run with Python 2.7. You should have the following l
 
 Download the GuitarSet audio and annotation data from [here](https://zenodo.org/record/1422265/files/GuitarSet_audio_and_annotation.zip?download=1 "GuitarSet download"). (Thanks again to the authors for creating this awesome dataset!)
 
-Unzip and place the downloaded GuitarSet folder in `tab-cnn/` so that in `tab-cnn/GuitarSet/` you have the following two folders:
+Unzip and place the downloaded GuitarSet folder in `tab-cnn/data/` so that in `tab-cnn/data/GuitarSet/` you have the following two folders:
 * `annotation/`
 * `audio/`
 
