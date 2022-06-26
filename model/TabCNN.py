@@ -49,7 +49,8 @@ class TabCNN:
         self.metrics["tr"] = []
         self.metrics["tf"] = []
         self.metrics["tdr"] = []
-        self.metrics["data"] = ["g0","g1","g2","g3","g4","g5","mean","std dev"]
+        self.metrics["data"] = ["gr", # validation result from random data
+                                "mean","std dev"]
         
         if self.spec_repr == "c":
             self.input_shape = (192, self.con_win_size, 1)
